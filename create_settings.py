@@ -3,6 +3,7 @@ from io import BufferedReader
 import sys
 import os
 import re
+from zipfile import ZipFile
 
 def find_data_file(filename):
     if getattr(sys, 'frozen', False):
@@ -16,8 +17,16 @@ def find_data_file(filename):
     return os.path.join(datadir, filename)
 
 if __name__ == "__main__":
-    with open("Einstellungen.fis", "r", encoding="latin-1") as f:
-        content = f.read()
+    if os.path.exists("Einstellungen.fis"):
+        path = "Einstellungen.fis"
+        with open(find_data_file("Einstellungen.fis"), "r", encoding="latin-1") as f:
+            content = f.read()
+    elif os.path.exists("library.zip"):
+        with ZipFile("library.zip") as zip:
+            with zip.open("Einstellungen.fis", "r") as f:
+                content = str(f.read(), "latin-1")
+    else:
+        sys.exit("No settings file found")
     content = re.sub(r"STRASSEN\.Vector\.Source=.*", "STRASSEN.Vector.Source=%s" % os.path.abspath('.').lower(), content)
     content = re.sub(r"STRASSEN\.Vector\.InfoFolder=.*", "STRASSEN.Vector.InfoFolder=%s" % os.path.abspath('.').upper(), content)
     with open("Einstellungen.fis", "wb") as f:
