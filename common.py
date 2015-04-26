@@ -29,7 +29,7 @@ def get_config():
 def dump_json(data):
     if "DEFAULT" not in config:
         config["DEFAULT"] = {}
-    box = AskFileBox(type="save", default=config["DEFAULT"].get("last_json_dir", ".")+"/*.json",
+    box = AskFileBox(type="save", default=config["DEFAULT"].get("last_json_dir", ".")+"/street_db.json",
                      filetypes=[["*.json", "JavaScript Object File"]], title="Dump data to JSON")
     path = box.ask()
     config["DEFAULT"]["last_json_dir"] = os.path.dirname(path)
@@ -62,6 +62,7 @@ def ask_dbf(last_dir='.'):
 
     return result
 
+
 class AskFileBox:
     def __init__(self, type='open', default='', filetypes=(), title=''):
         if type == "open":
@@ -84,7 +85,9 @@ class AskFileBox:
         result = None
         while not result:
             result = self.action(title=self.title, default=self.default, filetypes=self.filetypes)
-            if not result:
-                if not g.ynbox(title="No file selected!", msg="Do you want to try again?"):
+            if not result or not os.path.isfile(result):
+                result = None
+                if not g.ynbox(title="No valid file selected!", msg="Do you want to try again?"):
                     sys.exit(0)
+        print(result)
         return result
