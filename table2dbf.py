@@ -10,6 +10,7 @@ from dbf import ver_33 as dbf
 import easygui as g
 import common
 import sys
+import os
 
 attributes_inv = {'name': 0,
               'lautstaerk': 1,
@@ -71,7 +72,7 @@ def ask_login(values=('', '')):
 
 
 def ask_dbf(last_dir='.'):
-    title = "Select DBF File to update"
+    title = "Select DBF File"
     result = None
     while not result:
         result = g.fileopenbox(title=title, default=last_dir+"/*.dbf")
@@ -130,7 +131,8 @@ def build_update_string(updates):
 if __name__ == "__main__":
     #print("Loading %s..." % csv_file)
     #street_db = load_street_db(csv_file)
-    config = common.load_config()
+    common.load_config()
+    config = common.get_config()
     if "auth" in config:
         if "last_email" in config["auth"] and "last_password" in config["auth"]:
             values = [config["auth"]["last_email"], config["auth"]["last_password"]]
@@ -143,25 +145,43 @@ if __name__ == "__main__":
     try:
         street_db = load_from_google(user_data[0], user_data[1])
     except:
-        g.msgbox("Couldn't authenticate with google!", ok_button="Restart and try again.")
-        sys.exit(1)
+        load_json = not g.ynbox(msg="Couldn't authenticate with google!",
+                                choices=("[<F1>]OK, restart and try again", "[<F2>]Load streetdb from json"),
+                                image=None,
+                                default_choice='[<F1>]OK, restart and try again',
+                                cancel_choice='[<F2>]Load streetdb from json')
+        if load_json:
+            try:
+                street_db = common.load_json()
+            except:
+                g.msgbox(msg="Unable to load from JSON, exit!")
+                sys.exit(1)
+        else:
+            sys.exit(1)
     else:
         if "auth" not in config:
             config["auth"] = {}
         config["auth"]["last_email"] = user_data[0]
         config["auth"]["last_password"] = user_data[1]
-        common.save_config(config)
+        common.save_config()
     if "DEFAULT" not in config:
         config["DEFAULT"] = {}
-    dbf_file = ask_dbf(config["DEFAULT"].get("last_dbf_directory", "."))
-
+    box = common.AskFileBox(type='open', default=config["DEFAULT"].get("last_dbf_directory", ".")+"/*.dbf",
+                            title="Open DBF File", filetypes=[["*.dbf", "DBF File"]])
+    dbf_file = box.ask()
+    config["DEFAULT"]["last_dbf_directory"] = os.path.dirname(dbf_file)
+    common.save_config()
     print("Opening DBF (%s)..." % dbf_file)
     table = dbf.Table(dbf_file)
     table.open()
     updates_done = update_table(table, street_db)
     table.close()
-    common.save_config(config)
     if updates_done:
         g.textbox(msg="Done! Updated the following streets: ", title="Success", text=build_update_string(updates_done))
     else:
-        g.msgbox(msg="Done! All streets are up to date!")
+        dump_to_json = not g.ynbox(msg="Done! All streets are up to date!",
+                                   choices=("[<F1>]OK", "[<F2>]Dump streetdb to json"),
+                                   image=None,
+                                   default_choice='[<F1>]OK', cancel_choice='[<F2>]Dump streetdb to json')
+        if dump_to_json:
+            common.dump_json(street_db)
