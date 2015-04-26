@@ -11,17 +11,16 @@ import easygui as g
 import common
 import sys
 import os
-import time
 
 attributes_inv = {'name': 0,
-              'lautstaerk': 1,
-              'geruch': 2,
-              'verschmutz': 3,
-              'beleuchtun': 4,
-              'qualitaet': 5,
-              'haue_gaert': 6,
-              'gruenflaec': 7,
-              'dschnitt': 8}
+                  'lautstaerk': 1,
+                  'geruch': 2,
+                  'verschmutz': 3,
+                  'beleuchtun': 4,
+                  'qualitaet': 5,
+                  'haue_gaert': 6,
+                  'gruenflaec': 7,
+                  'dschnitt': 8}
 
 attributes = {v: k for k, v in attributes_inv.items()}
 
@@ -40,7 +39,7 @@ def load_from_google(email, password):
     for i, entry in enumerate(feed.entry):
         if entry.content.text == "Straße":
             in_data = True
-            start_row = int(entry.cell.row)+1
+            start_row = int(entry.cell.row) + 1
         elif entry.content.text == "0" and in_data:
             in_data = False
         elif in_data and int(entry.cell.row) >= start_row:
@@ -49,9 +48,10 @@ def load_from_google(email, password):
                 current_street = entry.content.text
                 street_db[current_street] = {}
 
-            street_db[current_street][attributes[int(entry.cell.col)-1]] = entry.content.text
+            street_db[current_street][attributes[int(entry.cell.col) - 1]] = entry.content.text
     pprint(street_db)
     return street_db
+
 
 def ask_login(values=('', '')):
     fieldNames = ["Google-Email", "Password"]
@@ -59,7 +59,7 @@ def ask_login(values=('', '')):
     values = g.multpasswordbox("Login", title, fieldNames, values)
     while True:
         if values is None:
-          break
+            break
         errmsg = ""
         for i in range(len(fieldNames)):
 
@@ -76,13 +76,12 @@ def ask_dbf(last_dir='.'):
     title = "Select DBF File"
     result = None
     while not result:
-        result = g.fileopenbox(title=title, default=last_dir+"/*.dbf")
+        result = g.fileopenbox(title=title, default=last_dir + "/*.dbf")
         if not result:
             if not g.ynbox(title="No file selected!", msg="Do you want to try again?"):
                 sys.exit(0)
 
     return result
-
 
 
 def load_street_db(csv_file):
@@ -112,7 +111,7 @@ def update_table(table, street_db):
                     current_rec = str(record[attribute]).strip()
                     update_rec = street_db[name][attribute]
                     if current_rec != update_rec:
-                        print(".",end="")
+                        print(".", end="")
                         updates[name].append("%s:%s -> %s" %
                                              (attribute, current_rec, update_rec))
                         record[attribute] = update_rec
@@ -130,15 +129,16 @@ def build_update_string(updates):
     update_string = ""
     for update in updates_done:
         changes = updates_done[update]
-        update_string += update+":\n"
+        update_string += update + ":\n"
         changed_attributes = [change.split(":")[0] for change in changes]
         change_values = [change.split(":")[1] for change in changes]
-        update_string += "\t\t".join(changed_attributes)+"\n"
-        update_string += "\t\t".join(change_values)+"\n"
+        update_string += "\t\t".join(changed_attributes) + "\n"
+        update_string += "\t\t".join(change_values) + "\n"
     return update_string
 
+
 if __name__ == "__main__":
-    #print("Loading %s..." % csv_file)
+    # print("Loading %s..." % csv_file)
     #street_db = load_street_db(csv_file)
     common.load_config()
     config = common.get_config()
@@ -175,7 +175,7 @@ if __name__ == "__main__":
         common.save_config()
     if "DEFAULT" not in config:
         config["DEFAULT"] = {}
-    box = common.AskFileBox(type='open', default=config["DEFAULT"].get("last_dbf_directory", ".")+"/*.dbf",
+    box = common.AskFileBox(type='open', default=config["DEFAULT"].get("last_dbf_directory", ".") + "/*.dbf",
                             title="Open DBF File", filetypes=[["*.dbf", "DBF File"]])
     dbf_file = box.ask()
     config["DEFAULT"]["last_dbf_directory"] = os.path.dirname(dbf_file)
@@ -193,8 +193,8 @@ if __name__ == "__main__":
     if updates_done:
         g.textbox(msg="Done! Updated the following streets: ", title="Success", text=build_update_string(updates_done))
     dump_to_json = not g.ynbox(msg="All streets are up to date! \n(Table2DBF (c) 2015 Korbinian Stein)",
-                                   choices=("[<F1>]OK", "[<F2>]Dump streetdb to json"),
-                                   image=None,
-                                   default_choice='[<F1>]OK', cancel_choice='[<F2>]Dump streetdb to json')
+                               choices=("[<F1>]OK", "[<F2>]Dump streetdb to json"),
+                               image=None,
+                               default_choice='[<F1>]OK', cancel_choice='[<F2>]Dump streetdb to json')
     if dump_to_json:
         common.dump_json(street_db)

@@ -8,6 +8,7 @@ default_config = {"last_select_dir": os.path.expanduser("~"), "last_username": "
 
 config = configparser.ConfigParser()
 
+
 def load_config():
     global config
     config_path = os.path.join(os.path.expanduser("~"), ".table2dbf.config")
@@ -29,7 +30,7 @@ def get_config():
 def dump_json(data):
     if "DEFAULT" not in config:
         config["DEFAULT"] = {}
-    box = AskFileBox(type="save", default=config["DEFAULT"].get("last_json_dir", ".")+"/street_db.json",
+    box = AskFileBox(type="save", default=config["DEFAULT"].get("last_json_dir", ".") + "/street_db.json",
                      filetypes=[["*.json", "JavaScript Object File"]], title="Dump data to JSON")
     path = box.ask()
     config["DEFAULT"]["last_json_dir"] = os.path.dirname(path)
@@ -41,7 +42,7 @@ def dump_json(data):
 def load_json():
     if "DEFAULT" not in config:
         config["DEFAULT"] = {}
-    box = AskFileBox(type="open", default=config["DEFAULT"].get("last_json_dir", ".")+"/*.json",
+    box = AskFileBox(type="open", default=config["DEFAULT"].get("last_json_dir", ".") + "/*.json",
                      filetypes=[["*.json", "JavaScript Object File"]], title="Load data from JSON")
     path = box.ask()
     config["DEFAULT"]["last_json_dir"] = os.path.dirname(path)
@@ -55,7 +56,7 @@ def ask_dbf(last_dir='.'):
     title = "Select DBF File"
     result = None
     while not result:
-        result = g.fileopenbox(title=title, default=last_dir+"/*.dbf")
+        result = g.fileopenbox(title=title, default=last_dir + "/*.dbf")
         if not result:
             if not g.ynbox(title="No file selected!", msg="Do you want to try again?"):
                 sys.exit(0)
