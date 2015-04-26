@@ -11,6 +11,7 @@ import easygui as g
 import common
 import sys
 import os
+import time
 
 attributes_inv = {'name': 0,
               'lautstaerk': 1,
@@ -106,16 +107,22 @@ def update_table(table, street_db):
         if name in street_db:
             with record:
                 updates[name] = []
-                print("Updating %s... " % name)
+                print("Updating %s " % name, end="")
                 for attribute in attributes_inv:
                     current_rec = str(record[attribute]).strip()
                     update_rec = street_db[name][attribute]
                     if current_rec != update_rec:
-                        updates[name].append("%s:\t%s -> %s" %
+                        print(".",end="")
+                        updates[name].append("%s:%s -> %s" %
                                              (attribute, current_rec, update_rec))
                         record[attribute] = update_rec
+
                 if len(updates[name]) < 1:
                     updates.pop(name)
+                    print(" done! No updates.")
+                else:
+                    print(" done! %d updated." % len(updates[name]))
+
     return updates
 
 
@@ -124,8 +131,10 @@ def build_update_string(updates):
     for update in updates_done:
         changes = updates_done[update]
         update_string += update+":\n"
-        for change in changes:
-            update_string += "\t%s\n" % change
+        changed_attributes = [change.split(":")[0] for change in changes]
+        change_values = [change.split(":")[1] for change in changes]
+        update_string += "\t\t".join(changed_attributes)+"\n"
+        update_string += "\t\t".join(change_values)+"\n"
     return update_string
 
 if __name__ == "__main__":
@@ -172,16 +181,20 @@ if __name__ == "__main__":
     config["DEFAULT"]["last_dbf_directory"] = os.path.dirname(dbf_file)
     common.save_config()
     print("Opening DBF (%s)..." % dbf_file)
-    table = dbf.Table(dbf_file)
+    try:
+        table = dbf.Table(dbf_file)
+    except dbf.DbfError as e:
+        g.msgbox(msg="Invalid DBF File!")
+        sys.exit(1)
+
     table.open()
     updates_done = update_table(table, street_db)
     table.close()
     if updates_done:
         g.textbox(msg="Done! Updated the following streets: ", title="Success", text=build_update_string(updates_done))
-    else:
-        dump_to_json = not g.ynbox(msg="Done! All streets are up to date!",
+    dump_to_json = not g.ynbox(msg="All streets are up to date! \n(Table2DBF (c) 2015 Korbinian Stein)",
                                    choices=("[<F1>]OK", "[<F2>]Dump streetdb to json"),
                                    image=None,
                                    default_choice='[<F1>]OK', cancel_choice='[<F2>]Dump streetdb to json')
-        if dump_to_json:
-            common.dump_json(street_db)
+    if dump_to_json:
+        common.dump_json(street_db)
