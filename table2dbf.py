@@ -9,20 +9,9 @@ from pprint import pprint
 from dbf import ver_33 as dbf
 import easygui as g
 import common
+from common import ATT, ATT_INV, ATT_HR
 import sys
 import os
-
-attributes_inv = {'name': 0,
-                  'lautstaerk': 1,
-                  'geruch': 2,
-                  'verschmutz': 3,
-                  'beleuchtun': 4,
-                  'qualitaet': 5,
-                  'haue_gaert': 6,
-                  'gruenflaec': 7,
-                  'dschnitt': 8}
-
-attributes = {v: k for k, v in attributes_inv.items()}
 
 
 def load_from_google(email, password):
@@ -48,7 +37,7 @@ def load_from_google(email, password):
                 current_street = entry.content.text
                 street_db[current_street] = {}
 
-            street_db[current_street][attributes[int(entry.cell.col) - 1]] = entry.content.text
+            street_db[current_street][ATT[int(entry.cell.col) - 1]] = entry.content.text
     pprint(street_db)
     return street_db
 
@@ -90,11 +79,11 @@ def load_street_db(csv_file):
         reader = csv.reader(f)
         for row in reader:
             details = {}
-            for i in range(len(attributes)):
+            for i in range(len(ATT)):
                 if i < 1:
-                    details[attributes[i]] = row[i].replace(str('\ufeff'), "")
+                    details[ATT[i]] = row[i].replace(str('\ufeff'), "")
                 else:
-                    details[attributes[i]] = row[i]
+                    details[ATT[i]] = row[i]
             street_db[row[0].replace(str('\ufeff'), "")] = details
     return street_db
 
@@ -107,7 +96,7 @@ def update_table(table, street_db):
             with record:
                 updates[name] = []
                 print("Updating %s " % name, end="")
-                for attribute in attributes_inv:
+                for attribute in ATT_INV:
                     current_rec = str(record[attribute]).strip()
                     update_rec = street_db[name][attribute]
                     if current_rec != update_rec:
@@ -130,7 +119,7 @@ def build_update_string(updates):
     for update in updates_done:
         changes = updates_done[update]
         update_string += update + ":\n"
-        changed_attributes = [change.split(":")[0] for change in changes]
+        changed_attributes = [ATT_HR[change.split(":")[0]] for change in changes]
         change_values = [change.split(":")[1] for change in changes]
         update_string += "\t\t".join(changed_attributes) + "\n"
         update_string += "\t\t".join(change_values) + "\n"

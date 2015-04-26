@@ -9,6 +9,40 @@ default_config = {"last_select_dir": os.path.expanduser("~"), "last_username": "
 config = configparser.ConfigParser()
 
 
+def find_data_file(filename):
+    if getattr(sys, 'frozen', False):
+        # The application is frozen
+        datadir = os.path.dirname(sys.executable)
+    else:
+        # The application is not frozen
+        # Change this bit to match where you store your data files:
+        datadir = os.path.dirname('.')
+
+    return os.path.join(datadir, filename)
+
+ATT_HR = {'name': "Straße",
+                 'lautstaerk': "Lautstärke/Lärmbelästigung",
+                 'geruch': "Geruch",
+                 'verschmutz': "Verschmutzung",
+                 'beleuchtun': "Beleuchtung",
+                 'qualitaet': "Straßenqualität",
+                 'haue_gaert': "Häuser/Gärten Zustand",
+                 'gruenflaec': "Grünflachen",
+                 'dschnitt': "Durchschnitt"}
+
+ATT_INV = {'name': 0,
+                  'lautstaerk': 1,
+                  'geruch': 2,
+                  'verschmutz': 3,
+                  'beleuchtun': 4,
+                  'qualitaet': 5,
+                  'haue_gaert': 6,
+                  'gruenflaec': 7,
+                  'dschnitt': 8}
+
+ATT = {v: k for k, v in ATT_INV.items()}
+
+
 def load_config():
     global config
     config_path = os.path.join(os.path.expanduser("~"), ".table2dbf.config")
