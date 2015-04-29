@@ -1,4 +1,5 @@
 import configparser
+from datetime import datetime
 import json
 import os
 import easygui as g
@@ -28,7 +29,8 @@ ATT_HR = {'name': "Straße",
                  'qualitaet': "Straßenqualität",
                  'haue_gaert': "Häuser/Gärten Zustand",
                  'gruenflaec': "Grünflachen",
-                 'dschnitt': "Durchschnitt"}
+                 'dschnitt': "Durchschnitt",
+                 'bwdatum': "Bewertungsdatum"}
 
 ATT_INV = {'name': 0,
                   'lautstaerk': 1,
@@ -38,11 +40,25 @@ ATT_INV = {'name': 0,
                   'qualitaet': 5,
                   'haue_gaert': 6,
                   'gruenflaec': 7,
-                  'dschnitt': 8}
+                  'dschnitt': 8,
+                  'bwdatum': 9}
+
+
+
+
+
+
 
 ATT = {v: k for k, v in ATT_INV.items()}
 
 
+def convert_date(input):
+    try:
+        print(datetime.strptime(input, "%d.%m.%Y"))
+        return datetime.strptime(input, "%d.%m.%Y")
+    except Exception as e:
+        print(e)
+        return None
 def load_config():
     global config
     config_path = os.path.join(os.path.expanduser("~"), ".table2dbf.config")
@@ -126,3 +142,5 @@ class AskFileBox:
                     sys.exit(0)
         print(result)
         return result
+
+ATT_CONV = {}
