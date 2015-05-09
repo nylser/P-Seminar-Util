@@ -15,14 +15,14 @@ import sys
 import os
 import traceback
 
-def load_from_google(email, password):
+def load_from_google(email, password, docid="1HAf7uZKGwMd5dvQOb7kmrTmySNT5r8aJMI_kS11ZsL0"):
     street_db = {}
     gd_client = gdata.spreadsheet.service.SpreadsheetsService()
     gd_client.email = email
     gd_client.password = password
     gd_client.source = 'TABLE-TO-DBF'
     gd_client.ProgrammaticLogin()
-    feed = gd_client.GetCellsFeed(key="1HAf7uZKGwMd5dvQOb7kmrTmySNT5r8aJMI_kS11ZsL0")
+    feed = gd_client.GetCellsFeed(key=docid)
     in_data = False
     start_row = 0
     current_street = ()
@@ -129,6 +129,7 @@ def update_table(table, street_db):
                     print(" done! No updates.")
                 else:
                     print(" done! %d updated." % len(updates[name]))
+                    updates[name].append("name:%s" % name)
 
     return updates
 

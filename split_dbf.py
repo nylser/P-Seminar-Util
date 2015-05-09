@@ -26,5 +26,21 @@ def split_files(path=None):
         t.delete_fields(fields)
         t.close()
 
+def add_fields(path=None):
+    if not path:
+        box = common.AskFileBox(type='open', title='Select File to split', default='*.dbf', filetypes=[['*.dbf', 'DBF Files']])
+        path = box.ask()
+    db = dbf.Table(path)
+    db.open()
+    for field in common.ATT_STUFF:
+        print(field)
+        db.add_fields(field)
+    db.close()
+
+
+
 if __name__ == "__main__":
-    split_files()
+    add_fields()
+#    split_files()
+
+

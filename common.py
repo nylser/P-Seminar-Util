@@ -1,13 +1,62 @@
 import configparser
 from datetime import datetime
+from PyQt5.QtCore import QSettings
 import json
 import os
 import easygui as g
 import sys
+import re
 
 default_config = {"last_select_dir": os.path.expanduser("~"), "last_username": "", "last_password": ""}
 
 config = configparser.ConfigParser()
+gui_settings = None
+
+def parse_finview(settings):
+    sections = {}
+    with open(settings, "r", encoding="latin-1") as f:
+        regex = r"\[(.*)\]"
+        current_section = None
+        for line in f.readlines():
+            name = re.match(regex, line)
+            if name is None:
+                if not (current_section is None):
+                    match = re.match(r"(.*)=([^\s].*)", line)
+                    if not (match is None):
+                        sections[current_section][match.group(1)] = match.group(2)
+            else:
+                current_section = name.group(1)
+                sections[current_section] = {}
+    return sections
+
+
+def parse_finview_string(string):
+    sections = {}
+    regex = r"\[(.*)\]"
+    current_section = None
+    for line in string.splitlines():
+        name = re.match(regex, line)
+        if name is None:
+            if not (current_section is None):
+                match = re.match(r"(.*)=([^\s].*)", line)
+                if not (match is None):
+                    sections[current_section][match.group(1)] = match.group(2)
+        else:
+            current_section = name.group(1)
+            sections[current_section] = {}
+    return sections
+
+def write_finview(config, settings):
+    file_string = ""
+    for section in config:
+        file_string += "[{}]\n".format(section)
+        for key in config[section]:
+            line = "{}={}".format(key, config[section][key])
+            file_string += line + "\n"
+        file_string += "\n"
+    with open(settings, "wb") as f:
+        for line in file_string.splitlines():
+            f.write((line.strip('\n')+"\r\n").encode("latin-1"))
 
 
 def find_data_file(filename):
@@ -44,12 +93,23 @@ ATT_INV = {'name': 0,
                   'bwdatum': 9}
 
 
-
-
-
-
-
 ATT = {v: k for k, v in ATT_INV.items()}
+
+
+ATT_STUFF = []
+for i in range(len(ATT)):
+    type = ATT[i]
+    if i == 0:
+        type += " C(30)"
+        continue
+    elif i == 9:
+        type += " C(10)"
+    else:
+        type += " N(1,0)"
+    ATT_STUFF.append(type)
+
+#ATT_STUFF = [att for att in ATT_INV.keys() ]
+#ATT_STUFF = ('name C(30)', 'lautstaerk N(1)', 'verschmutz N(1)', "beleuchtun N(1)")
 
 
 def convert_date(input):
@@ -59,6 +119,15 @@ def convert_date(input):
     except Exception as e:
         print(e)
         return None
+
+
+def get_gui_settings():
+    global gui_settings
+    if not gui_settings:
+        gui_settings = QSettings("Mineguild", "Table2DBF")
+    return gui_settings
+
+
 def load_config():
     global config
     config_path = os.path.join(os.path.expanduser("~"), ".table2dbf.config")
@@ -142,5 +211,7 @@ class AskFileBox:
                     sys.exit(0)
         print(result)
         return result
+
+
 
 ATT_CONV = {}

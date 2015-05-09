@@ -1,9 +1,11 @@
-import configparser
-from io import BufferedReader
 import sys
 import os
-import re
+from common import write_finview, parse_finview_string
 from zipfile import ZipFile
+
+
+THEME_NAMES = ("STRASSEN")
+
 
 def find_data_file(filename):
     if getattr(sys, 'frozen', False):
@@ -27,11 +29,15 @@ if __name__ == "__main__":
                 content = str(f.read(), "latin-1")
     else:
         sys.exit("No settings file found")
-    content = re.sub(r"STRASSEN\.Vector\.Source=.*", "STRASSEN.Vector.Source=%s" % os.path.abspath('.').lower(), content)
-    content = re.sub(r"STRASSEN\.Vector\.InfoFolder=.*", "STRASSEN.Vector.InfoFolder=%s" % os.path.abspath('.').upper(), content)
-    with open("Einstellungen.fis", "wb") as f:
+    settings = parse_finview_string(content)
+    for theme in THEME_NAMES:
+        settings["Connections"]["{}.Vector.Source".format(theme)] = os.path.abspath('.').lower()
+        settings["Connections"]["{}.Vector.InfoFolder".format(theme)] = os.path.abspath('.').upper()
+
+    write_finview(settings, "Einstellungen.fis")
+    """with open("Einstellungen.fis", "wb") as f:
         for line in content.splitlines():
-            f.write((line.strip('\n')+"\r\n").encode("latin-1"))
+            f.write((line.strip('\n')+"\r\n").encode("latin-1"))"""
 
 
     """config.read(find_data_file("Einstellungen_PSEM.fis"))
