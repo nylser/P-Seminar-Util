@@ -5,15 +5,8 @@ import csv
 import gdata
 from gdata.spreadsheet import service
 import gdata.auth
-from pprint import pprint
-from dbf import ver_33 as dbf
-import easygui as g
-import common
 from common import ATT, ATT_INV, ATT_HR, ATT_CONV
-from split_dbf import split_files
 import sys
-import os
-import traceback
 
 def load_from_google(email, password, docid="1HAf7uZKGwMd5dvQOb7kmrTmySNT5r8aJMI_kS11ZsL0"):
     street_db = {}
@@ -56,7 +49,6 @@ def load_from_google(email, password, docid="1HAf7uZKGwMd5dvQOb7kmrTmySNT5r8aJMI
         # Update last row
         last_row = int(entry.cell.row)
         last_column = int(entry.cell.col)
-    pprint(street_db)
     return street_db
 
 
@@ -144,67 +136,3 @@ def build_update_string(updates):
         update_string += "\t\t".join(changed_attributes) + "\n"
         update_string += "\t\t".join(change_values) + "\n"
     return update_string
-
-
-if __name__ == "__main__":
-    common.load_config()
-    config = common.get_config()
-    if "auth" in config:
-        if "last_email" in config["auth"] and "last_password" in config["auth"]:
-            values = [config["auth"]["last_email"], config["auth"]["last_password"]]
-            user_data = ask_login(values)
-        else:
-            user_data = ask_login()
-    else:
-        user_data = ask_login()
-    print("Loading from google-document")
-    try:
-        street_db = load_from_google(user_data[0], user_data[1])
-    except Exception as e:
-        traceback.print_exc()
-        load_json = not g.ynbox(msg="Couldn't authenticate with google!",
-                                choices=("[<F1>]OK, restart and try again", "[<F2>]Load streetdb from json"),
-                                image=None,
-                                default_choice='[<F1>]OK, restart and try again',
-                                cancel_choice='[<F2>]Load streetdb from json')
-        if load_json:
-            try:
-                street_db = common.load_json()
-            except:
-                g.msgbox(msg="Unable to load from JSON, exit!")
-                sys.exit(1)
-        else:
-            sys.exit(1)
-    else:
-        if "auth" not in config:
-            config["auth"] = {}
-        config["auth"]["last_email"] = user_data[0]
-        config["auth"]["last_password"] = user_data[1]
-        common.save_config()
-    if "DEFAULT" not in config:
-        config["DEFAULT"] = {}
-    box = common.AskFileBox(type='open', default=config["DEFAULT"].get("last_dbf_directory", ".") + "/*.dbf",
-                            title="Open DBF File", filetypes=[["*.dbf", "DBF File"]])
-    dbf_file = box.ask()
-    config["DEFAULT"]["last_dbf_directory"] = os.path.dirname(dbf_file)
-    common.save_config()
-    print("Opening DBF (%s)..." % dbf_file)
-    try:
-        table = dbf.Table(dbf_file)
-    except dbf.DbfError as e:
-        g.msgbox(msg="Invalid DBF File!")
-        sys.exit(1)
-
-    table.open()
-    updates_done = update_table(table, street_db)
-    table.close()
-    split_files(dbf_file)
-    if updates_done:
-        g.textbox(msg="Done! Updated the following streets: ", title="Success", text=build_update_string(updates_done),
-                  modify=False)
-    dump_to_json = not g.ynbox(msg="All streets are up to date! \n(Table2DBF (c) 2015 Korbinian Stein)",
-                               choices=("[<F1>]OK", "[<F2>]Dump streetdb to json"),
-                               image=None,
-                               default_choice='[<F1>]OK', cancel_choice='[<F2>]Dump streetdb to json')
-    if dump_to_json:
-        common.dump_json(street_db)

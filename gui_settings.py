@@ -4,8 +4,6 @@
 # Website: http://panofish.net
 #===================================================================
 
-import sys
-from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 import inspect
 

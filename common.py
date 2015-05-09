@@ -1,9 +1,7 @@
 import configparser
 from datetime import datetime
 from PyQt5.QtCore import QSettings
-import json
 import os
-import easygui as g
 import sys
 import re
 
@@ -96,6 +94,9 @@ ATT_INV = {'name': 0,
 ATT = {v: k for k, v in ATT_INV.items()}
 
 
+ATT_CONV = {}
+
+
 ATT_STUFF = []
 for i in range(len(ATT)):
     type = ATT[i]
@@ -145,7 +146,7 @@ def get_config():
         load_config()
     return config
 
-
+"""
 def dump_json(data):
     if "DEFAULT" not in config:
         config["DEFAULT"] = {}
@@ -169,49 +170,5 @@ def load_json():
         data = json.load(f)
     print("Done.")
     return data
+"""
 
-
-def ask_dbf(last_dir='.'):
-    title = "Select DBF File"
-    result = None
-    while not result:
-        result = g.fileopenbox(title=title, default=last_dir + "/*.dbf")
-        if not result:
-            if not g.ynbox(title="No file selected!", msg="Do you want to try again?"):
-                sys.exit(0)
-
-    return result
-
-
-class AskFileBox:
-    def __init__(self, type='open', default='', filetypes=(), title=''):
-        if type == "open":
-            self.action = g.fileopenbox
-        elif type == "save":
-            self.action = g.filesavebox
-        else:
-            raise ValueError("Invalid Type!")
-        self.default = default
-        self.filetypes = filetypes
-        if title:
-            self.title = title
-        else:
-            if type == 'open':
-                self.title = "Open File"
-            else:
-                self.title = "Save File"
-
-    def ask(self):
-        result = None
-        while not result:
-            result = self.action(title=self.title, default=self.default, filetypes=self.filetypes)
-            if not result or not os.path.isfile(result):
-                result = None
-                if not g.ynbox(title="No valid file selected!", msg="Do you want to try again?"):
-                    sys.exit(0)
-        print(result)
-        return result
-
-
-
-ATT_CONV = {}
