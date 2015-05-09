@@ -1,15 +1,18 @@
-from PyQt5.QtCore import QDir, QThread, QSettings
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QFileDialog, QDialog,\
-    QWidget, QApplication, QMainWindow, QMessageBox, QTableWidget, QTableWidgetItem, QVBoxLayout
 import sys
+import ctypes
+
+from PyQt5.QtCore import QDir, QThread
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QFileDialog, QDialog, \
+    QApplication, QMainWindow, QMessageBox, QTableWidgetItem
+from dbf import ver_33 as dbf
+
 from Table2DBF_Main import Ui_MainWindow as GUI
 from Table2DBF_Table import Ui_Updates
-import ctypes
 import table2dbf
-from dbf import ver_33 as dbf
 import common
 import gui_settings
+
 myappid = u'mineguild.table2dbf.gui.0.5' # arbitrary string
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
@@ -203,58 +206,8 @@ class MainWindow(QMainWindow, GUI):
         settings.endGroup()
 
 
-
-
-"""
-        if self.google_radio.isChecked():
-            self.start_button.setText("Loading...")
-            self.setEnabled(False)
-            try:
-                streetdb = table2dbf.load_from_google(self.username.text(), self.password.text(), self.document_id.text())
-            except:
-                mbox = QMessageBox()
-                mbox.setWindowTitle("Google-Fail")
-                mbox.setIcon(QMessageBox.Warning)
-                mbox.setWindowIcon(QIcon.fromTheme("dialog-warning"))
-                mbox.setText("Couldn't login or load data from google!")
-                self.start_button.setText("Start")
-                self.setEnabled(True)
-                return
-        else:
-            streetdb = table2dbf.load_street_db(self.csv_file.text())
-        self.start_button.setText("Updating...")
-        try:
-            table = dbf.Table(self.dbf_file.text())
-            table.open()
-            updates = table2dbf.update_table(table, streetdb)
-            table.close()
-        except dbf.DbfError as e:
-            mbox = QMessageBox()
-            mbox.setWindowTitle("DB-Fail")
-            mbox.setIcon(QMessageBox.Warning)
-            mbox.setWindowIcon(QIcon.fromTheme("dialog-warning"))
-            mbox.setText("Couldn't open/update table!")
-            mbox.setDetailedText(e.message)
-            self.start_button.setText("Start")
-            self.setEnabled(True)
-            return
-
-        from pprint import pprint
-        pprint(updates)
-        self.start_button.setText("Start")
-        self.setEnabled(True)"""
-
-
-
 if __name__== "__main__":
     app = QApplication(sys.argv)
-    filter = "DBF files (*.txt)"
-    """dialog = QFileDialog()
-    dialog.setAcceptMode(QFileDialog.AcceptOpen)
-    dialog.setFilter(QDir.Files)
-    dialog.setFileMode(QFileDialog.ExistingFile)
-    dialog.setNameFilter(filter)
-    dialog.exec()"""
     w = MainWindow()
     w.show()
     sys.exit(app.exec_())
