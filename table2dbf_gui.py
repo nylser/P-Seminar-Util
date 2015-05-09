@@ -13,6 +13,7 @@ import table2dbf
 import common
 import gui_settings
 
+
 myappid = u'mineguild.table2dbf.gui.0.5' # arbitrary string
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
@@ -104,26 +105,14 @@ class MainWindow(QMainWindow, GUI):
         self.working_thread = None
 
     def ask_dbf(self):
-        dialog = QFileDialog()
-        filter = "DBF files (*.dbf)"
-        dialog.setAcceptMode(QFileDialog.AcceptOpen)
-        dialog.setFilter(QDir.Files)
-        dialog.setFileMode(QFileDialog.ExistingFile)
-        dialog.setNameFilter(filter)
-        res = dialog.exec()
+        res = open_file(self, "DBF files (*.dbf)")
         if res:
-            self.dbf_file.setText(dialog.selectedFiles()[0])
+            self.dbf_file.setText(res)
 
     def ask_csv(self):
-        dialog = QFileDialog()
-        filter = "CSV files (*.csv)"
-        dialog.setAcceptMode(QFileDialog.AcceptOpen)
-        dialog.setFilter(QDir.Files)
-        dialog.setFileMode(QFileDialog.ExistingFile)
-        dialog.setNameFilter(filter)
-        res = dialog.exec()
+        res = open_file(self, "CSV files (*.csv)")
         if res:
-            self.csv_file.setText(dialog.selectedFiles()[0])
+            self.csv_file.setText(res)
 
     def switch_csv(self):
         self.username.setEnabled(False)
@@ -157,7 +146,7 @@ class MainWindow(QMainWindow, GUI):
 
         if len(incomplete) > 0:
             mbox = QMessageBox(self)
-            mbox.setWindowTitle("Warning incomplete fields!")
+            mbox.setWindowTitle("Warning, incomplete fields!")
             mbox.setIcon(QMessageBox.Warning)
             mbox.setWindowIcon(QIcon.fromTheme("dialog-warning"))
             mbox.setText("%d fields are incomplete" % len(incomplete))
@@ -206,11 +195,19 @@ class MainWindow(QMainWindow, GUI):
         settings.endGroup()
 
 
+def open_file(parent, filter):
+    dialog = QFileDialog()
+    dialog.setAcceptMode(QFileDialog.AcceptOpen)
+    dialog.setFilter(QDir.Files)
+    dialog.setFileMode(QFileDialog.ExistingFile)
+    dialog.setNameFilter(filter)
+    res = dialog.exec()
+    if res:
+        return dialog.selectedFiles()[0]
+
+
 if __name__== "__main__":
     app = QApplication(sys.argv)
     w = MainWindow()
     w.show()
     sys.exit(app.exec_())
-
-
-
