@@ -11,6 +11,7 @@ import common
 import gui_settings
 
 
+
 myappid = u'mineguild.table2dbf.gui.0.5' # arbitrary string
 ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
@@ -21,6 +22,7 @@ class WorkThread(QThread):
         self.mw = mw
         self.mbox = None
         self.updates = {}
+        self.streetdb = None
 
     def run(self):
         mw = self.mw
@@ -47,34 +49,59 @@ class WorkThread(QThread):
             self.mbox = ("DB-Fail", QMessageBox.Warning, QIcon.fromTheme("dialog-warning"),
                         "Couldn't open/update table!", e.message)
             return
+        self.streetdb = streetdb
 
 
 class TableDialog(QDialog, Ui_Updates):
-    def __init__(self, updates):
+    def __init__(self, updates, streetdb):
         QDialog.__init__(self)
         self.setupUi(self)
         table = self.tableWidget
         table.setRowCount(len(updates)+1)
         table.setColumnCount(len(common.ATT))
+        self.setWindowTitle("Overview")
+
         for i in range(len(common.ATT)):
             item = QTableWidgetItem(common.ATT_HR[common.ATT[i]])
             table.setItem(0, i, item)
         for i, street in enumerate(updates):
             changes = updates[street]
             row = []
-            for z, att in enumerate(common.ATT_INV):
+            for z in range(len(common.ATT)):
                 found = False
+                att = common.ATT[z]
+                print(att)
                 for change in changes:
-                    if change.split(":")[0] == att:
-                        row.append(change.split(":")[1])
+                    split = change.split(":")
+                    if split[0] == att:
+                        row.append(split[1])
                         found = True
                 if not found:
-                    row.append("")
+                    row.append(streetdb[street][att])
             for x, update in enumerate(row):
                 item = QTableWidgetItem(update)
+                if "->" in update:
+                    item.setForeground(Qt.red)
                 print(i+1, x, update)
                 table.setItem(i+1, x, item)
+        self.load_settings()
 
+    def closeEvent(self, evt):
+        self.save_settings()
+        super(TableDialog).closeEvent(evt)
+
+    def load_settings(self):
+        settings = common.get_gui_settings()
+        settings.beginGroup("table")
+        if settings.value("geometry"):
+            self.restoreGeometry(settings.value("geometry"))
+        settings.endGroup()
+
+    def save_settings(self):
+        settings = common.get_gui_settings()
+        settings.beginGroup("table")
+        settings.setValue("geometry", self.saveGeometry())
+        settings.endGroup()
 
 class MainWindow(QMainWindow, GUI):
     def __init__(self):
@@ -185,7 +212,7 @@ class MainWindow(QMainWindow, GUI):
                 mbox.setDetailedText(data[4])
             mbox.exec()
         if self.working_thread.updates:
-            d = TableDialog(self.working_thread.updates)
+            d = TableDialog(self.working_thread.updates, self.working_thread.streetdb)
             d.exec()
         else:
             mbox = QMessageBox(self)

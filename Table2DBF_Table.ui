@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="res_table2dbf.qrc">
+    <normaloff>:/main/logo.png</normaloff>:/main/logo.png</iconset>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QTableWidget" name="tableWidget"/>
@@ -32,7 +36,9 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="res_table2dbf.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>buttonBox</sender>

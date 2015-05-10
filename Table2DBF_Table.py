@@ -6,13 +6,15 @@
 #
 # WARNING! All changes made in this file will be lost!
 
-from PyQt5 import QtCore, QtWidgets
-
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 class Ui_Updates(object):
     def setupUi(self, Updates):
         Updates.setObjectName("Updates")
         Updates.resize(520, 441)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/main/logo.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        Updates.setWindowIcon(icon)
         self.verticalLayout = QtWidgets.QVBoxLayout(Updates)
         self.verticalLayout.setObjectName("verticalLayout")
         self.tableWidget = QtWidgets.QTableWidget(Updates)
@@ -36,3 +38,4 @@ class Ui_Updates(object):
         _translate = QtCore.QCoreApplication.translate
         Updates.setWindowTitle(_translate("Updates", "Dialog"))
 
+import res_table2dbf_rc
