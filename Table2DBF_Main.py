@@ -255,3 +255,4 @@ class Ui_MainWindow(object):
         self.actionAbout.setText(_translate("MainWindow", "About"))
         self.actionExit.setText(_translate("MainWindow", "Exit"))
 
+import res_table2dbf_rc
