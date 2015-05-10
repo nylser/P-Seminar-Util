@@ -1,10 +1,7 @@
 import sys
 import ctypes
 
-from PyQt5.QtCore import QDir, QThread
-from PyQt5.QtGui import QIcon
-from PyQt5.QtWidgets import QFileDialog, QDialog, \
-    QApplication, QMainWindow, QMessageBox, QTableWidgetItem
+from PyQt5.Qt import *
 from dbf import ver_33 as dbf
 
 from Table2DBF_Main import Ui_MainWindow as GUI
@@ -28,6 +25,7 @@ class WorkThread(QThread):
     def run(self):
         mw = self.mw
         if mw.google_radio.isChecked():
+            mw.setStatusTip("Loading...")
             mw.start_button.setText("Loading...")
             mw.setEnabled(False)
             try:
@@ -38,6 +36,7 @@ class WorkThread(QThread):
                 return
         else:
             streetdb = table2dbf.load_street_db(mw.csv_file.text())
+        mw.setStatusTip("Updating...")
         mw.start_button.setText("Updating...")
         try:
             table = dbf.Table(mw.dbf_file.text())
@@ -48,11 +47,6 @@ class WorkThread(QThread):
             self.mbox = ("DB-Fail", QMessageBox.Warning, QIcon.fromTheme("dialog-warning"),
                         "Couldn't open/update table!", e.message)
             return
-
-        from pprint import pprint
-        pprint(self.updates)
-        mw.start_button.setText("Start")
-        mw.setEnabled(True)
 
 
 class TableDialog(QDialog, Ui_Updates):
@@ -87,22 +81,28 @@ class MainWindow(QMainWindow, GUI):
         super(QMainWindow, self).__init__()
         # Set up the user interface from Designer.
         self.setupUi(self)
+        self.setStatusTip("Ready")
         self.open_dbf.clicked.connect(self.ask_dbf)
         self.open_csv.clicked.connect(self.ask_csv)
         self.google_radio.clicked.connect(self.switch_google)
         self.csv_radio.clicked.connect(self.switch_csv)
         self.start_button.clicked.connect(self.start)
-
+        self.actionAbout.triggered.connect(self.show_about)
+        self.adjustSize()
         self.load_settings()
 
         if self.google_radio.isChecked():
             self.switch_google()
         else:
             self.switch_csv()
-        self.adjustSize()
 
         self.changed_styles = []
         self.working_thread = None
+
+    def show_about(self):
+        about = "<html>Table2DBF by Korbinian Stein (2015)<br>P-Seminar (FLG Planegg) Digitaler Stadtplan: " \
+                "'Subjektive Lebenssituation'<br><a href='https://github.com/nylser/P-Seminar-Util'>GitHub</a></html>"
+        QMessageBox.about(self, "About this program", about)
 
     def ask_dbf(self):
         res = open_file(self, "DBF files (*.dbf)")
@@ -129,6 +129,11 @@ class MainWindow(QMainWindow, GUI):
         self.password.setEnabled(True)
         self.document_id.setEnabled(True)
         self.repaint()
+
+    def closeEvent(self, evnt):
+        self.save_settings()
+        super(MainWindow, self).closeEvent(evnt)
+
 
     def start(self):
         incomplete = []
@@ -159,7 +164,7 @@ class MainWindow(QMainWindow, GUI):
             return
         for field in self.changed_styles:
             field.setStyleSheet("")
-
+        self.setStatusTip("Working...")
         self.working_thread = WorkThread(self)
         self.working_thread.finished.connect(self.finished_start)
         self.working_thread.start()
@@ -168,6 +173,7 @@ class MainWindow(QMainWindow, GUI):
         self.save_settings()
         self.start_button.setText("Start")
         self.setEnabled(True)
+        self.setStatusTip("Ready")
         if self.working_thread.mbox:
             data = self.working_thread.mbox
             mbox = QMessageBox(self)
@@ -181,17 +187,26 @@ class MainWindow(QMainWindow, GUI):
         if self.working_thread.updates:
             d = TableDialog(self.working_thread.updates)
             d.exec()
+        else:
+            mbox = QMessageBox(self)
+            mbox.setWindowTitle("Done!")
+            mbox.setText("Program is done! Everything was up to date!")
+            mbox.setIcon(QMessageBox.Information)
+            mbox.exec()
 
     def save_settings(self):
         settings = common.get_gui_settings()
         settings.beginGroup("MainWindow")
         gui_settings.guisave(self, settings)
+        settings.setValue("state", self.saveGeometry())
         settings.endGroup()
 
     def load_settings(self):
         settings = common.get_gui_settings()
         settings.beginGroup("MainWindow")
         gui_settings.guirestore(self, settings)
+        if settings.value("state"):
+            self.restoreGeometry(settings.value("state"))
         settings.endGroup()
 
 

@@ -2,11 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import csv
+
 import gdata
 from gdata.spreadsheet import service
 import gdata.auth
+
 from common import ATT, ATT_INV, ATT_HR, ATT_CONV
-import sys
+
 
 def load_from_google(email, password, docid="1HAf7uZKGwMd5dvQOb7kmrTmySNT5r8aJMI_kS11ZsL0"):
     street_db = {}
@@ -50,37 +52,6 @@ def load_from_google(email, password, docid="1HAf7uZKGwMd5dvQOb7kmrTmySNT5r8aJMI
         last_row = int(entry.cell.row)
         last_column = int(entry.cell.col)
     return street_db
-
-
-def ask_login(values=('', '')):
-    fieldNames = ["Google-Email", "Password"]
-    title = "Google-Login"
-    values = g.multpasswordbox("Login", title, fieldNames, values)
-    while True:
-        if values is None:
-            break
-        errmsg = ""
-        for i in range(len(fieldNames)):
-
-            if values[i].strip() == "":
-                errmsg += '"%s" is a required field.\n\n' % fieldNames[i]
-        if errmsg == "":
-            break
-        else:
-            values = g.multpasswordbox(errmsg, title, fieldNames, values)
-    return values
-
-
-def ask_dbf(last_dir='.'):
-    title = "Select DBF File"
-    result = None
-    while not result:
-        result = g.fileopenbox(title=title, default=last_dir + "/*.dbf")
-        if not result:
-            if not g.ynbox(title="No file selected!", msg="Do you want to try again?"):
-                sys.exit(0)
-
-    return result
 
 
 def load_street_db(csv_file):

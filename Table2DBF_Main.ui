@@ -7,12 +7,16 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>456</width>
-    <height>444</height>
+    <width>474</width>
+    <height>504</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Table2DBF</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="res_table2dbf.qrc">
+    <normaloff>:/main/logo.png</normaloff>:/main/logo.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout">
@@ -187,19 +191,6 @@
        <string>Output</string>
       </property>
       <layout class="QFormLayout" name="formLayout_2">
-       <item row="1" column="1">
-        <widget class="QCheckBox" name="split_check">
-         <property name="font">
-          <font>
-           <family>Calibri</family>
-           <pointsize>11</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Split into Category Files</string>
-         </property>
-        </widget>
-       </item>
        <item row="0" column="0" colspan="2">
         <widget class="QWidget" name="widget" native="true">
          <layout class="QHBoxLayout" name="horizontalLayout">
@@ -238,8 +229,20 @@
          <zorder>dbf_file</zorder>
         </widget>
        </item>
+       <item row="1" column="1">
+        <widget class="QCheckBox" name="split_check">
+         <property name="font">
+          <font>
+           <family>Calibri</family>
+           <pointsize>11</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Split into Category Files</string>
+         </property>
+        </widget>
+       </item>
       </layout>
-      <zorder>groupBox</zorder>
       <zorder>widget</zorder>
       <zorder>split_check</zorder>
      </widget>
@@ -252,34 +255,99 @@
         <pointsize>11</pointsize>
        </font>
       </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <property name="spacing">
+        <number>0</number>
+       </property>
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
        <item>
-        <widget class="QPushButton" name="start_button">
-         <property name="font">
-          <font>
-           <family>Calibri</family>
-           <pointsize>11</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Start</string>
-         </property>
+        <widget class="QWidget" name="widget_5" native="true">
+         <layout class="QHBoxLayout" name="horizontalLayout_3">
+          <property name="leftMargin">
+           <number>9</number>
+          </property>
+          <property name="topMargin">
+           <number>2</number>
+          </property>
+          <property name="rightMargin">
+           <number>9</number>
+          </property>
+          <property name="bottomMargin">
+           <number>2</number>
+          </property>
+          <item>
+           <widget class="QPushButton" name="about_button">
+            <property name="text">
+             <string>About</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="exit_button">
-         <property name="font">
-          <font>
-           <family>Calibri</family>
-           <pointsize>11</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Exit</string>
-         </property>
+        <widget class="QWidget" name="widget_4" native="true">
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
+          <property name="leftMargin">
+           <number>9</number>
+          </property>
+          <property name="topMargin">
+           <number>2</number>
+          </property>
+          <property name="rightMargin">
+           <number>9</number>
+          </property>
+          <property name="bottomMargin">
+           <number>2</number>
+          </property>
+          <item>
+           <widget class="QPushButton" name="start_button">
+            <property name="font">
+             <font>
+              <family>Calibri</family>
+              <pointsize>11</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>Start</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="exit_button">
+            <property name="font">
+             <font>
+              <family>Calibri</family>
+              <pointsize>11</pointsize>
+             </font>
+            </property>
+            <property name="text">
+             <string>Exit</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </widget>
        </item>
       </layout>
+     </widget>
+    </item>
+    <item>
+     <widget class="Line" name="line">
+      <property name="orientation">
+       <enum>Qt::Horizontal</enum>
+      </property>
      </widget>
     </item>
    </layout>
@@ -289,14 +357,46 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>456</width>
+     <width>474</width>
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuTest">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionAbout"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <addaction name="menuTest"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
  </widget>
- <resources/>
+ <tabstops>
+  <tabstop>google_radio</tabstop>
+  <tabstop>username</tabstop>
+  <tabstop>password</tabstop>
+  <tabstop>document_id</tabstop>
+  <tabstop>csv_radio</tabstop>
+  <tabstop>csv_file</tabstop>
+  <tabstop>open_csv</tabstop>
+  <tabstop>dbf_file</tabstop>
+  <tabstop>open_dbf</tabstop>
+  <tabstop>split_check</tabstop>
+ </tabstops>
+ <resources>
+  <include location="res_table2dbf.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>exit_button</sender>
@@ -305,12 +405,44 @@
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>446</x>
-     <y>363</y>
+     <x>442</x>
+     <y>405</y>
     </hint>
     <hint type="destinationlabel">
      <x>302</x>
      <y>206</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionExit</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>236</x>
+     <y>226</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>about_button</sender>
+   <signal>clicked()</signal>
+   <receiver>actionAbout</receiver>
+   <slot>trigger()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>236</x>
+     <y>443</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>-1</x>
+     <y>-1</y>
     </hint>
    </hints>
   </connection>
