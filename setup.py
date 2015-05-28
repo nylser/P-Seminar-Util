@@ -3,7 +3,7 @@ import shutil
 
 from cx_Freeze import setup, Executable
 
-import create_settings
+import update_gui_files
 shutil.rmtree("build")
 # Dependencies are automatically detected, but it might need fine tuning.
 build_exe_options = {"packages": ["os"], "excludes": ["tkinter", 'tcl', 'ttk'],
