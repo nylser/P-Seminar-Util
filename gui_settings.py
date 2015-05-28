@@ -4,7 +4,6 @@
 # Website: http://panofish.net
 #===================================================================
 
-from PyQt5.QtWidgets import *
 import inspect
 
 #===================================================================
@@ -13,6 +12,8 @@ import inspect
 # ui = qmainwindow object
 # settings = qsettings object
 #===================================================================
+from PySide.QtGui import QComboBox, QLineEdit, QCheckBox
+
 
 def guisave(ui, settings):
 

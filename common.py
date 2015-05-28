@@ -1,6 +1,6 @@
 import configparser
 from datetime import datetime
-from PyQt5.QtCore import QSettings
+from PySide.QtCore import QSettings
 import os
 import sys
 import re

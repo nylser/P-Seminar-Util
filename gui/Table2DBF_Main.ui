@@ -243,8 +243,6 @@
         </widget>
        </item>
       </layout>
-      <zorder>widget</zorder>
-      <zorder>split_check</zorder>
      </widget>
     </item>
     <item>
@@ -259,16 +257,7 @@
        <property name="spacing">
         <number>0</number>
        </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
+       <property name="margin">
         <number>0</number>
        </property>
        <item>

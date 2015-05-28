@@ -1,11 +1,12 @@
 import sys
 import ctypes
 
-from PyQt5.Qt import *
+from PySide.QtCore import QThread, Qt, QDir
+from PySide.QtGui import QMessageBox, QIcon, QDialog, QTableWidgetItem, QMainWindow, QFileDialog, QApplication
 from dbf import ver_33 as dbf
 
-from Table2DBF_Main import Ui_MainWindow as GUI
-from Table2DBF_Table import Ui_Updates
+from gui.Table2DBF_Main import Ui_MainWindow as GUI
+from gui.Table2DBF_Table import Ui_Updates
 import table2dbf
 import common
 import gui_settings
@@ -105,7 +106,7 @@ class TableDialog(QDialog, Ui_Updates):
 
 class MainWindow(QMainWindow, GUI):
     def __init__(self):
-        super(QMainWindow, self).__init__()
+        super(MainWindow, self).__init__()
         # Set up the user interface from Designer.
         self.setupUi(self)
         self.setStatusTip("Ready")
@@ -115,6 +116,8 @@ class MainWindow(QMainWindow, GUI):
         self.csv_radio.clicked.connect(self.switch_csv)
         self.start_button.clicked.connect(self.start)
         self.actionAbout.triggered.connect(self.show_about)
+
+
         self.adjustSize()
         self.load_settings()
 
@@ -233,6 +236,7 @@ class MainWindow(QMainWindow, GUI):
         settings.beginGroup("MainWindow")
         gui_settings.guirestore(self, settings)
         if settings.value("state"):
+           # pass
             self.restoreGeometry(settings.value("state"))
         settings.endGroup()
 
