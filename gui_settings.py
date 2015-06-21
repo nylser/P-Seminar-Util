@@ -75,7 +75,10 @@ def guirestore(ui, settings):
             name = obj.objectName()
             value = settings.value(name)   # get stored value from registry
             if value != None:
-                obj.setCheckState(value)   # restore checkbox
+                try:
+                    obj.setCheckState(value)   # restore checkbox
+                except:
+                    print("Unable to restore setting.")
 
         #if isinstance(obj, QRadioButton):                
 

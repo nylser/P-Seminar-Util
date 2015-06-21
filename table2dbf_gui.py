@@ -1,20 +1,31 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import sys
 import ctypes
 
 from PySide.QtCore import QThread, Qt, QDir
 from PySide.QtGui import QMessageBox, QIcon, QDialog, QTableWidgetItem, QMainWindow, QFileDialog, QApplication
 from dbf import ver_33 as dbf
+try:
+    from gui.Table2DBF_Main import Ui_MainWindow as ggui
+    from gui.Table2DBF_Table import Ui_Updates
+except ImportError:
+    import update_gui_files
+    update_gui_files.convert_ui()
+    update_gui_files.convert_res()
+    from gui.Table2DBF_Table import Ui_Updates
+    from gui.Table2DBF_Main import Ui_MainWindow as ggui
 
-from gui.Table2DBF_Main import Ui_MainWindow as GUI
-from gui.Table2DBF_Table import Ui_Updates
 import table2dbf
 import common
 import gui_settings
+import platform
 
 
-
-myappid = u'mineguild.table2dbf.gui.0.5' # arbitrary string
-ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+if platform.system() == 'Windows':
+    myappid = u'mineguild.table2dbf.gui.0.5' # arbitrary string
+    ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
 
 
 class WorkThread(QThread):
@@ -104,7 +115,7 @@ class TableDialog(QDialog, Ui_Updates):
         settings.setValue("geometry", self.saveGeometry())
         settings.endGroup()
 
-class MainWindow(QMainWindow, GUI):
+class MainWindow(QMainWindow, ggui):
     def __init__(self):
         super(MainWindow, self).__init__()
         # Set up the user interface from Designer.
