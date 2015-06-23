@@ -35,13 +35,3 @@ if __name__ == "__main__":
         settings["Connections"]["{}.Vector.InfoFolder".format(theme)] = os.path.abspath('.').upper()
 
     write_finview(settings, "Einstellungen.fis")
-    """with open("Einstellungen.fis", "wb") as f:
-        for line in content.splitlines():
-            f.write((line.strip('\n')+"\r\n").encode("latin-1"))"""
-
-
-    """config.read(find_data_file("Einstellungen_PSEM.fis"))
-    config["Connections"]["STRASSEN.Vector.Source"] = os.path.dirname('.')
-    config["Connections"]["Strassen.Vector.InfoFolder"] = os.path.dirname(".").upper()
-    with open("Einstellungen_PSEM.fis") as f:
-        config.write(f)"""

@@ -2,7 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import shutil
+from PySide.QtCore import QDir
+from PySide.QtGui import QFileDialog
 import common
+
+
 from dbf import ver_33 as dbf
 from common import ATT, ATT_HR
 import os
@@ -10,8 +14,8 @@ import os
 
 def split_files(path=None):
     if not path:
-        box = common.AskFileBox(type='open', title='Select File to split', default='*.dbf', filetypes=[['*.dbf', 'DBF Files']])
-        path = box.ask()
+        path = open_file(None, "DBF files (*.dbf)")
+        if not path: return
     for i in range(1, len(ATT)-1):
         file = os.path.join(os.path.dirname(path), ATT_HR[ATT[i]].replace("/", "_").
                                                                 replace(" ", "_")+".dbf")
@@ -28,8 +32,8 @@ def split_files(path=None):
 
 def add_fields(path=None):
     if not path:
-        box = common.AskFileBox(type='open', title='Select File to split', default='*.dbf', filetypes=[['*.dbf', 'DBF Files']])
-        path = box.ask()
+        path = open_file(None, "DBF files (*.dbf)")
+        if not path: return
     db = dbf.Table(path)
     db.open()
     for field in common.ATT_STUFF:
@@ -37,7 +41,15 @@ def add_fields(path=None):
         db.add_fields(field)
     db.close()
 
-
+def open_file(parent, filter):
+    dialog = QFileDialog()
+    dialog.setAcceptMode(QFileDialog.AcceptOpen)
+    dialog.setFilter(QDir.Files)
+    dialog.setFileMode(QFileDialog.ExistingFile)
+    dialog.setNameFilter(filter)
+    res = dialog.exec()
+    if res:
+        return dialog.selectedFiles()[0]
 
 if __name__ == "__main__":
     add_fields()
