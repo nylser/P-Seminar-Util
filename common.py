@@ -69,26 +69,26 @@ def find_data_file(filename):
     return os.path.join(datadir, filename)
 
 ATT_HR = {'name': "Straße",
-                 'lautstaerk': "Lautstärke/Lärmbelästigung",
-                 'geruch': "Geruch",
+                 'lautsta_db': "Lautstärke dBA",
+                 'lautsta_su': "Lautstärke subjektiv",
                  'verschmutz': "Verschmutzung",
                  'beleuchtun': "Beleuchtung",
                  'qualitaet': "Straßenqualität",
                  'haue_gaert': "Häuser/Gärten Zustand",
-                 'gruenflaec': "Grünflachen",
-                 'dschnitt': "Durchschnitt",
-                 'bwdatum': "Bewertungsdatum"}
+                 'gruen_oeff': "Grünflächen öffentlich",
+                 'gruen_priv': "Grünflächen privat",
+                 'dschnitt': "Durchschnitt"}
 
 ATT_INV = {'name': 0,
-                  'lautstaerk': 1,
-                  'geruch': 2,
+                  'lautsta_db': 1,
+                  'lautsta_su': 2,
                   'verschmutz': 3,
                   'beleuchtun': 4,
                   'qualitaet': 5,
                   'haue_gaert': 6,
-                  'gruenflaec': 7,
-                  'dschnitt': 8,
-                  'bwdatum': 9}
+                  'gruen_oeff': 7,
+                  'gruen_priv': 8,
+                  'dschnitt': 9}
 
 
 ATT = {v: k for k, v in ATT_INV.items()}

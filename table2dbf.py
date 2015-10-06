@@ -3,9 +3,11 @@
 
 import csv
 
-import gdata
+
+"""import gdata
 from gdata.spreadsheet import service
-import gdata.auth
+import gdata.auth"""
+import traceback
 
 from common import ATT, ATT_INV, ATT_HR, ATT_CONV
 
@@ -59,19 +61,28 @@ def load_street_db(csv_file):
     with open(csv_file, newline='', encoding='utf-8') as f:
         reader = csv.reader(f)
         for row in reader:
-            details = {}
-            for i in range(len(ATT)):
-                if i < 1:
-                    details[ATT[i]] = row[i].replace(str('\ufeff'), "")
-                else:
-                    details[ATT[i]] = row[i]
-            street_db[row[0].replace(str('\ufeff'), "")] = details
+            if row[0] != 'Straße':
+                print(row)
+                details = {}
+                for i in range(len(ATT)):
+                    if i < 1:
+                        details[ATT[i]] = row[i].replace(str('\ufeff'), "")
+                    else:
+                        if ',' in row[i]:
+                            details[ATT[i]] = float(row[i].replace(',', '.'))
+                        elif len(row[i]) > 0:
+                            try: details[ATT[i]] = int(row[i])
+                            except ValueError:
+                                print(row[i], "is not a number! Continue")
+                street_db[row[0].replace(str('\ufeff'), "")] = details
     return street_db
 
 
 def update_table(table, street_db):
     updates = {}
+    print(street_db)
     for record in table:
+        #print(street_db)
         name = record.name.strip()
         if name in street_db:
             with record:
@@ -85,6 +96,7 @@ def update_table(table, street_db):
                             print(".", end="")
                             updates[name].append("%s:%s -> %s" %
                                                  (attribute, current_rec, update_rec))
+
                             record[attribute] = update_rec
 
                 if len(updates[name]) < 1:

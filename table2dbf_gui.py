@@ -45,6 +45,8 @@ class WorkThread(QThread):
             try:
                 streetdb = table2dbf.load_from_google(mw.username.text(), mw.password.text(), mw.document_id.text())
             except:
+                import traceback
+                traceback.print_exc()
                 self.mbox = ("Google-Fail", QMessageBox.Warning, QIcon.fromTheme("dialog-warning"),
                         "Couldn't login or load data from google!", None)
                 return
@@ -62,6 +64,9 @@ class WorkThread(QThread):
                         "Couldn't open/update table!", e.message)
             return
         self.streetdb = streetdb
+        if mw.split_check.checkState():
+            import split_dbf
+            split_dbf.split_files(mw.dbf_file.text())
 
 
 class TableDialog(QDialog, Ui_Updates):
@@ -225,15 +230,15 @@ class MainWindow(QMainWindow, ggui):
             if data[4]:
                 mbox.setDetailedText(data[4])
             mbox.exec()
-        if self.working_thread.updates:
-            d = TableDialog(self.working_thread.updates, self.working_thread.streetdb)
-            d.exec()
-        else:
-            mbox = QMessageBox(self)
-            mbox.setWindowTitle("Done!")
-            mbox.setText("Program is done! Everything was up to date!")
-            mbox.setIcon(QMessageBox.Information)
-            mbox.exec()
+        #if self.working_thread.updates:
+        #    d = TableDialog(self.working_thread.updates, self.working_thread.streetdb)
+        #    d.exec()
+        #else:
+        mbox = QMessageBox(self)
+        mbox.setWindowTitle("Done!")
+        mbox.setText("Program is done! Everything was up to date!")
+        mbox.setIcon(QMessageBox.Information)
+        mbox.exec()
 
     def save_settings(self):
         settings = common.get_gui_settings()
