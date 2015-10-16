@@ -230,13 +230,17 @@ class MainWindow(QMainWindow, ggui):
             if data[4]:
                 mbox.setDetailedText(data[4])
             mbox.exec()
+        # TODO: NEED TO FIX!
         #if self.working_thread.updates:
         #    d = TableDialog(self.working_thread.updates, self.working_thread.streetdb)
         #    d.exec()
         #else:
         mbox = QMessageBox(self)
         mbox.setWindowTitle("Done!")
-        mbox.setText("Program is done! Everything was up to date!")
+        if self.working_thread.updates:
+            mbox.setText("Program is done! {} updated!" .format(len(self.working_thread.updates)))
+        else:
+            mbox.setText("Program is done! Everything was up to date!")
         mbox.setIcon(QMessageBox.Information)
         mbox.exec()
 

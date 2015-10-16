@@ -77,7 +77,7 @@ ATT_HR = {'name': "Straße",
                  'haue_gaert': "Häuser/Gärten Zustand",
                  'gruen_oeff': "Grünflächen öffentlich",
                  'gruen_priv': "Grünflächen privat",
-                 'dschnitt': "Durchschnitt"}
+                 'dschnitt_2': "Durchschnitt"}
 
 ATT_INV = {'name': 0,
                   'lautsta_db': 1,
@@ -88,7 +88,7 @@ ATT_INV = {'name': 0,
                   'haue_gaert': 6,
                   'gruen_oeff': 7,
                   'gruen_priv': 8,
-                  'dschnitt': 9}
+                  'dschnitt_2': 9}
 
 
 ATT = {v: k for k, v in ATT_INV.items()}
