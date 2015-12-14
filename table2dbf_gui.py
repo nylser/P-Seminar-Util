@@ -94,7 +94,10 @@ class TableDialog(QDialog, Ui_Updates):
                         row.append(split[1])
                         found = True
                 if not found:
-                    row.append(streetdb[street][att])
+                    try:
+                        row.append(streetdb[street][att])
+                    except KeyError:
+                        """print("Error building diagram in Street:", street, " Attribute: ", att) ## Missing field"""
             for x, update in enumerate(row):
                 item = QTableWidgetItem(update)
                 if "->" in update:
@@ -231,18 +234,18 @@ class MainWindow(QMainWindow, ggui):
                 mbox.setDetailedText(data[4])
             mbox.exec()
         # TODO: NEED TO FIX!
-        #if self.working_thread.updates:
-        #    d = TableDialog(self.working_thread.updates, self.working_thread.streetdb)
-        #    d.exec()
-        #else:
-        mbox = QMessageBox(self)
-        mbox.setWindowTitle("Done!")
         if self.working_thread.updates:
-            mbox.setText("Program is done! {} updated!" .format(len(self.working_thread.updates)))
+            d = TableDialog(self.working_thread.updates, self.working_thread.streetdb)
+            d.exec()
         else:
-            mbox.setText("Program is done! Everything was up to date!")
-        mbox.setIcon(QMessageBox.Information)
-        mbox.exec()
+            mbox = QMessageBox(self)
+            mbox.setWindowTitle("Done!")
+            if self.working_thread.updates:
+                mbox.setText("Program is done! {} updated!" .format(len(self.working_thread.updates)))
+            else:
+                mbox.setText("Program is done! Everything was up to date!")
+            mbox.setIcon(QMessageBox.Information)
+            mbox.exec()
 
     def save_settings(self):
         settings = common.get_gui_settings()
