@@ -82,7 +82,6 @@ def update_table(table, street_db):
     updates = {}
     print(street_db)
     for record in table:
-        #print(street_db)
         name = record.name.strip()
         if name in street_db:
             with record:

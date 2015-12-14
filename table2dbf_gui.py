@@ -266,11 +266,12 @@ class MainWindow(QMainWindow, ggui):
 
 def open_file(parent, filter):
     dialog = QFileDialog()
+    dialog.setOption(QFileDialog.DontUseNativeDialog)
     dialog.setAcceptMode(QFileDialog.AcceptOpen)
     dialog.setFilter(QDir.Files)
     dialog.setFileMode(QFileDialog.ExistingFile)
     dialog.setNameFilter(filter)
-    res = dialog.exec()
+    res = dialog.exec_()
     if res:
         return dialog.selectedFiles()[0]
 
